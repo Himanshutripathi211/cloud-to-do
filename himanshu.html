@@ -1,0 +1,131 @@
+project-files/
+├── index.html
+├── style.css
+├── script.js
+├── firebase-config.js
+├── README.md
+└── .gitignore
+
+
+// index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cloud To-Do List</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>☁️ Cloud To-Do List</h1>
+    <input type="text" id="taskInput" placeholder="Add a new task..." />
+    <button onclick="addTask()">Add Task</button>
+    <ul id="taskList"></ul>
+  </div>
+  <script src="firebase-config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
+
+
+// style.css
+body {
+  font-family: Arial, sans-serif;
+  background: #e9f0f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+.container {
+  background: white;
+  padding: 20px 40px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+input {
+  padding: 10px;
+  width: 70%;
+  margin-right: 10px;
+}
+button {
+  padding: 10px 15px;
+}
+ul {
+  margin-top: 20px;
+  list-style: none;
+  padding: 0;
+}
+li {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ccc;
+}
+
+
+// firebase-config.js
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+
+// script.js
+function addTask() {
+  const taskInput = document.getElementById("taskInput");
+  const task = taskInput.value.trim();
+  if (task) {
+    db.collection("tasks").add({ text: task }).then(() => {
+      taskInput.value = "";
+      loadTasks();
+    });
+  }
+}
+
+function loadTasks() {
+  const taskList = document.getElementById("taskList");
+  taskList.innerHTML = "";
+  db.collection("tasks").get().then(snapshot => {
+    snapshot.forEach(doc => {
+      const li = document.createElement("li");
+      li.textContent = doc.data().text;
+      taskList.appendChild(li);
+    });
+  });
+}
+
+document.addEventListener("DOMContentLoaded", loadTasks);
+
+
+// README.md
+# ☁️ Cloud To-Do List App
+
+This is a simple To-Do List App using Firebase Firestore to store tasks in the cloud.
+
+## Features
+- Add tasks
+- Store in Firebase Firestore
+- View synced tasks from any device
+
+## How to Use
+1. Clone the repo.
+2. Replace the Firebase config with your own.
+3. Open `index.html` in browser.
+
+## Deploy
+- Use GitHub Pages for frontend
+- Firebase handles backend via Firestore
+
+---
+
+Next up: Cloud Notes App! Shall I go ahead and generate that one too?
